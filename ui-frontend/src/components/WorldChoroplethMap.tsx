@@ -3,7 +3,7 @@ import { Card, Group, Text, Box, Paper, Badge } from '@mantine/core'
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps'
 import type { CountrySummary } from '../api'
 
-const TOPO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
+const TOPO_URL = (import.meta as any).env?.VITE_TOPO_URL || 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
 function colorFor(score?: number | null) {
   if (score == null) return '#e9ecef' // no data

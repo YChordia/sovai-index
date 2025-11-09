@@ -1,14 +1,16 @@
 import { test, expect } from '@playwright/test'
+import { waitForApiReady, gotoAndIdle } from './utils'
 
 test('country detail renders for EU', async ({ page }) => {
-  await page.goto('/country/EU')
+  await waitForApiReady(page)
+  await gotoAndIdle(page, '/country/EU')
   await page.getByText(/European Union/i).waitFor()
   await expect(page).toHaveScreenshot('country-eu.png', { maxDiffPixelRatio: 0.03 })
 })
 
 test('country detail renders for IN', async ({ page }) => {
-  await page.goto('/country/IN')
+  await waitForApiReady(page)
+  await gotoAndIdle(page, '/country/IN')
   await page.getByText(/India/i).waitFor()
   await expect(page).toHaveScreenshot('country-in.png', { maxDiffPixelRatio: 0.03 })
 })
-
