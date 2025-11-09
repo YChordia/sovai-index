@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Card, Group, Text, Box, Paper, Badge } from '@mantine/core'
+import { Card, Group, Text, Paper, Badge } from '@mantine/core'
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps'
 import type { CountrySummary } from '../api'
 

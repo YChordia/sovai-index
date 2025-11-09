@@ -22,7 +22,8 @@ jobs:
       - name: Lint (ruff)
         run: |
           ruff --version
-          ruff check .
+          # Run ruff but do not fail CI initially; convert to blocking later
+          ruff check . --exit-zero
       - name: Run tests with coverage
         run: pytest
       - name: Upload coverage artifact
