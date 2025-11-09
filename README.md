@@ -58,3 +58,6 @@ Real‑time regulatory and language sovereignty intelligence.
 - API: FastAPI app at `api/main.py` with Pydantic models and endpoints.
 - Scoring: see `core/scoring.py` for readable, documented logic.
 - Ingest: simple fetch + parse at `ingest/` (seed policies only for demo).
+## For Developers
+
+- See `DEVELOPER_NOTES.md` for a concise summary, gotchas (ISO mapping, jsdom, Mantine matchMedia), run/test/CI instructions, and roadmap.
