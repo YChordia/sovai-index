@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS readiness_scores (
     score NUMERIC NOT NULL,
     policy_score NUMERIC,
     infra_score NUMERIC,
+    language_score NUMERIC,
     risk_score NUMERIC,
     computed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
