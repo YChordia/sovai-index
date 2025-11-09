@@ -1,5 +1,5 @@
 import { AppShell, Group, Text } from '@mantine/core'
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 import Overview from './pages/Overview'
 import CountryDetail from './pages/CountryDetail'
 import Compare from './pages/Compare'
@@ -21,8 +21,6 @@ function Topbar() {
 }
 
 function App() {
-  const location = useLocation()
-  const navigate = useNavigate()
   return (
     <AppShell header={{ height: 56 }} padding="md">
       <AppShell.Header>
@@ -41,4 +39,3 @@ function App() {
 }
 
 export default App
-

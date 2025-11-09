@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
-import { Card, Group, Text, Box, Paper, Badge } from '@mantine/core'
+import { useCallback, useMemo, useState } from 'react'
+import { Card, Group, Text, Paper, Badge } from '@mantine/core'
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps'
 import type { CountrySummary } from '../api'
 
-const TOPO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
+const TOPO_URL = (import.meta as any).env?.VITE_TOPO_URL || 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'
 
 function colorFor(score?: number | null) {
   if (score == null) return '#e9ecef' // no data
@@ -67,11 +67,11 @@ export default function WorldChoroplethMap({
     return ''
   }
 
-  function toIso2(code: string): string {
+  const toIso2 = useCallback((code: string): string => {
     const up = (code || '').toUpperCase()
     if (up.length === 2) return up
     return A3_TO_A2[up] || up
-  }
+  }, [])
 
   // Accept both iso2 and iso3 codes from the API
   const countryMap = useMemo(() => {
@@ -84,7 +84,7 @@ export default function WorldChoroplethMap({
       if (!m.has(iso2)) m.set(iso2, c)
     }
     return m
-  }, [data])
+  }, [data, toIso2])
   const eu = countryMap.get('EU')
   const DEBUG = typeof window !== 'undefined' && (window as any).SOVAI_DEBUG === true
   const log = (...args: any[]) => {

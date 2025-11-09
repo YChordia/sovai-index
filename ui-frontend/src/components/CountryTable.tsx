@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Card, Table, Text } from '@mantine/core'
+﻿import { Badge, Card, Table } from '@mantine/core'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { CountrySummary } from '../api'
@@ -17,7 +17,7 @@ export default function CountryTable({ data }: { data: CountrySummary[] }) {
       <Table.Td>{c.name}</Table.Td>
       <Table.Td>
         <Badge color={badgeColor(c.readiness_score)} variant="filled">
-          {c.readiness_score?.toFixed?.(1) ?? 'N/A'}
+          {c.readiness_score?.toFixed?.(1) ?? '—'}
         </Badge>
       </Table.Td>
       <Table.Td>{c.policy_score?.toFixed?.(1) ?? '—'}</Table.Td>
@@ -45,4 +45,6 @@ export default function CountryTable({ data }: { data: CountrySummary[] }) {
     </Card>
   )
 }
+
+
 
