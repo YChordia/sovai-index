@@ -1,6 +1,7 @@
 import { render, fireEvent, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import WorldChoroplethMap from './WorldChoroplethMap'
+import { MantineProvider } from '@mantine/core'
 
 const GEOJSON = {
   type: 'FeatureCollection',
@@ -26,7 +27,11 @@ const DATA = [
 
 test('hover shows name and score; click fires callback', async () => {
   const onClick = vi.fn()
-  const { container } = render(<WorldChoroplethMap data={DATA as any} onCountryClick={onClick} geography={GEOJSON as any} />)
+  const { container } = render(
+    <MantineProvider defaultColorScheme="light">
+      <WorldChoroplethMap data={DATA as any} onCountryClick={onClick} geography={GEOJSON as any} />
+    </MantineProvider>
+  )
 
   const paths = container.querySelectorAll('path')
   expect(paths.length).toBeGreaterThan(0)
@@ -34,9 +39,10 @@ test('hover shows name and score; click fires callback', async () => {
   const indiaPath = paths[0]
   fireEvent.mouseMove(indiaPath, { clientX: 100, clientY: 100, pageX: 100, pageY: 100 })
 
-  // Hover card renders text
+  // Hover card renders text (scope by value to avoid EU header badge match)
   expect(screen.getByText(/India/i)).toBeInTheDocument()
-  expect(screen.getByText(/Readiness:/i)).toBeInTheDocument()
+  const indiaReadinessEls = screen.getAllByText(/Readiness:/i)
+  expect(indiaReadinessEls.some((el) => /60\.0/.test(el.textContent || ''))).toBe(true)
 
   fireEvent.click(indiaPath)
   expect(onClick).toHaveBeenCalledWith('IN')
@@ -44,5 +50,6 @@ test('hover shows name and score; click fires callback', async () => {
   const francePath = paths[1]
   fireEvent.mouseMove(francePath, { clientX: 120, clientY: 110, pageX: 120, pageY: 110 })
   expect(screen.getByText(/European Union/i)).toBeInTheDocument()
-  expect(screen.getByText(/Readiness: 65.0/i)).toBeInTheDocument()
+  const euReadinessEls = screen.getAllByText(/Readiness:/i)
+  expect(euReadinessEls.some((el) => /65\.0/.test(el.textContent || ''))).toBe(true)
 })
