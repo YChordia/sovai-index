@@ -1,10 +1,10 @@
 import { Card, List, Text, Title, Table, Code, Stack, Anchor } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { fetchMethodology } from '../api'
+import { fetchMethodology, type Methodology } from '../api'
 import Loading from '../components/Loading'
 
 export default function Methodology() {
-  const [data, setData] = useState<any | null>(null)
+  const [data, setData] = useState<Methodology | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {

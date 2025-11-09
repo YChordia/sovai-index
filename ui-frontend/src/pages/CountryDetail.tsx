@@ -1,7 +1,7 @@
 import { Badge, Card, Grid, Group, List, Text } from '@mantine/core'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { CountryDetail as Detail, fetchCountry, fetchMethodology } from '../api'
+import { CountryDetail as Detail, fetchCountry } from '../api'
 import Loading from '../components/Loading'
 import ScoreCard from '../components/ScoreCard'
 import StackedBars from '../components/StackedBars'
@@ -74,4 +74,3 @@ export default function CountryDetail() {
     </div>
   )
 }
-

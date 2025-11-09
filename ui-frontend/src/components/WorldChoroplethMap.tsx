@@ -84,7 +84,7 @@ export default function WorldChoroplethMap({
       if (!m.has(iso2)) m.set(iso2, c)
     }
     return m
-  }, [data])
+  }, [data, toIso2])
   const eu = countryMap.get('EU')
   const DEBUG = typeof window !== 'undefined' && (window as any).SOVAI_DEBUG === true
   const log = (...args: any[]) => {
