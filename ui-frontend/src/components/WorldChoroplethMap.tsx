@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Card, Group, Text, Paper, Badge } from '@mantine/core'
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps'
 import type { CountrySummary } from '../api'
@@ -67,11 +67,11 @@ export default function WorldChoroplethMap({
     return ''
   }
 
-  function toIso2(code: string): string {
+  const toIso2 = useCallback((code: string): string => {
     const up = (code || '').toUpperCase()
     if (up.length === 2) return up
     return A3_TO_A2[up] || up
-  }
+  }, [])
 
   // Accept both iso2 and iso3 codes from the API
   const countryMap = useMemo(() => {
