@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Card, Group, Text, Tooltip } from '@mantine/core'
+import { Card, Group, Text, Box, Paper } from '@mantine/core'
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps'
 import type { CountrySummary } from '../api'
 
@@ -13,6 +13,8 @@ function colorFor(score?: number | null) {
   return '#12b886'
 }
 
+type HoverState = { name: string; iso: string; score?: number | null; x: number; y: number } | null
+
 export default function WorldChoroplethMap({
   data,
   onCountryClick,
@@ -20,7 +22,7 @@ export default function WorldChoroplethMap({
   data: CountrySummary[]
   onCountryClick?: (iso: string) => void
 }) {
-  const [hover, setHover] = useState<{ name: string; iso: string; score?: number | null } | null>(null)
+  const [hover, setHover] = useState<HoverState>(null)
   const lookup = useMemo(() => {
     const m = new Map<string, CountrySummary>()
     for (const c of data) m.set(c.iso_code.toUpperCase(), c)
@@ -45,24 +47,29 @@ export default function WorldChoroplethMap({
                 const fill = colorFor(score)
                 const clickable = !!match
                 return (
-                  <Tooltip key={geo.rsmKey} label={`${name}${match ? ` — ${score?.toFixed?.(1) ?? 'N/A'}` : ''}`} withArrow>
-                    <Geography
-                      geography={geo}
-                      style={{
-                        default: { fill, outline: 'none', cursor: clickable ? 'pointer' : 'default' },
-                        hover: { fill: clickable ? '#228be6' : fill, outline: 'none', cursor: clickable ? 'pointer' : 'default' },
-                        pressed: { fill: '#1971c2', outline: 'none' },
-                      }}
-                      onMouseEnter={() => setHover({ name, iso, score })}
-                      onMouseLeave={() => setHover(null)}
-                      onClick={() => clickable && onCountryClick?.(iso)}
-                    />
-                  </Tooltip>
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    style={{
+                      default: { fill, outline: 'none', cursor: clickable ? 'pointer' : 'default', stroke: '#fff', strokeWidth: 0.3 },
+                      hover: { fill: clickable ? '#228be6' : fill, outline: 'none', cursor: clickable ? 'pointer' : 'default', stroke: '#fff', strokeWidth: 0.3 },
+                      pressed: { fill: '#1971c2', outline: 'none', stroke: '#fff', strokeWidth: 0.3 },
+                    }}
+                    onMouseMove={(evt: any) => setHover({ name, iso, score, x: evt.clientX, y: evt.clientY })}
+                    onMouseLeave={() => setHover(null)}
+                    onClick={() => { if (clickable) onCountryClick?.(iso) }}
+                  />
                 )
               })
             }
           </Geographies>
         </ComposableMap>
+        {hover && (
+          <Paper shadow="md" p="xs" radius="sm" style={{ position: 'fixed', left: hover.x + 12, top: hover.y + 12, pointerEvents: 'none', zIndex: 1000 }}>
+            <Text fw={600} size="sm">{hover.name}</Text>
+            {hover.score != null && <Text size="sm">Readiness: {hover.score?.toFixed?.(1)}</Text>}
+          </Paper>
+        )}
         <div style={{ position: 'absolute', right: 8, bottom: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
           <span style={{ width: 12, height: 12, background: '#fa5252', display: 'inline-block' }} />
           <Text size="xs">Low</Text>
@@ -75,4 +82,3 @@ export default function WorldChoroplethMap({
     </Card>
   )
 }
-
