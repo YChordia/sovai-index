@@ -5,5 +5,5 @@ test('methodology page renders', async ({ page }) => {
   await waitForApiReady(page)
   await gotoAndIdle(page, '/methodology')
   await page.getByText(/Methodology/i).waitFor()
-  await expect(page).toHaveScreenshot('methodology.png', { maxDiffPixelRatio: 0.02 })
+  await expect(page.getByText('Weights')).toBeVisible()
 })

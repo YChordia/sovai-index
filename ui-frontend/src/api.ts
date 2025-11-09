@@ -26,6 +26,13 @@ export type Policy = {
   indicators: PolicyIndicator[];
 };
 
+export type Methodology = {
+  inputs: string[]
+  weights: Record<string, number>
+  equations: Record<string, string>
+  notes: string[]
+}
+
 export type CountryDetail = {
   iso_code: string;
   name: string;
@@ -36,7 +43,7 @@ export type CountryDetail = {
   risk_score?: number | null;
   computed_at?: string | null;
   policies: Policy[];
-  methodology: any;
+  methodology: Methodology;
 };
 
 export async function fetchCountries(): Promise<CountrySummary[]> {
@@ -59,9 +66,8 @@ export async function fetchCompare(isos: string[]): Promise<CountrySummary[]> {
   return res.json();
 }
 
-export async function fetchMethodology(): Promise<any> {
+export async function fetchMethodology(): Promise<Methodology> {
   const res = await fetch(`${API_BASE}/methodology`);
   if (!res.ok) throw new Error('Failed to fetch methodology');
   return res.json();
 }
-
