@@ -64,6 +64,16 @@ def seed_demo():
     INSERT INTO countries (iso_code, name, region) VALUES ('IN','India','Asia')
     ON CONFLICT (iso_code) DO UPDATE SET name=EXCLUDED.name;
 
+    -- Additional high-interest AI markets
+    INSERT INTO countries (iso_code, name, region) VALUES ('JP','Japan','Asia')
+    ON CONFLICT (iso_code) DO UPDATE SET name=EXCLUDED.name;
+    INSERT INTO countries (iso_code, name, region) VALUES ('KR','South Korea','Asia')
+    ON CONFLICT (iso_code) DO UPDATE SET name=EXCLUDED.name;
+    INSERT INTO countries (iso_code, name, region) VALUES ('SA','Saudi Arabia','Middle East')
+    ON CONFLICT (iso_code) DO UPDATE SET name=EXCLUDED.name;
+    INSERT INTO countries (iso_code, name, region) VALUES ('SG','Singapore','Asia')
+    ON CONFLICT (iso_code) DO UPDATE SET name=EXCLUDED.name;
+
     -- EU policy + indicators
     WITH eu AS (SELECT id AS cid FROM countries WHERE iso_code='EU'),
     ins AS (
@@ -108,6 +118,55 @@ def seed_demo():
     SELECT id, 'gpu_capacity_index', 55 FROM countries WHERE iso_code='IN';
     INSERT INTO infra_signals (country_id, metric, value)
     SELECT id, 'power_cost_index', 60 FROM countries WHERE iso_code='IN';
+
+    -- Simple policies for JP, KR, SA, SG
+    WITH c AS (SELECT id AS cid FROM countries WHERE iso_code='JP'),
+    ins AS (
+      INSERT INTO policies (country_id, name, source_url, category, status, raw_text)
+      SELECT cid, 'Japan AI Guidelines', 'https://example.jp/ai', 'ai_policy', 'in_force', 'Baseline AI policy text.' FROM c RETURNING id
+    )
+    INSERT INTO policy_indicators (policy_id, key, value) VALUES
+      ((SELECT id FROM ins), 'mentions_ai_systems','true'),
+      ((SELECT id FROM ins), 'mentions_cross_border','true');
+
+    WITH c AS (SELECT id AS cid FROM countries WHERE iso_code='KR'),
+    ins AS (
+      INSERT INTO policies (country_id, name, source_url, category, status, raw_text)
+      SELECT cid, 'Korea AI Policy', 'https://example.kr/ai', 'ai_policy', 'in_force', 'Baseline AI policy text.' FROM c RETURNING id
+    )
+    INSERT INTO policy_indicators (policy_id, key, value) VALUES
+      ((SELECT id FROM ins), 'mentions_ai_systems','true');
+
+    WITH c AS (SELECT id AS cid FROM countries WHERE iso_code='SA'),
+    ins AS (
+      INSERT INTO policies (country_id, name, source_url, category, status, raw_text)
+      SELECT cid, 'Saudi AI Policy', 'https://example.sa/ai', 'ai_policy', 'in_force', 'Baseline AI policy text.' FROM c RETURNING id
+    )
+    INSERT INTO policy_indicators (policy_id, key, value) VALUES
+      ((SELECT id FROM ins), 'mentions_data_localization','true'),
+      ((SELECT id FROM ins), 'mentions_cross_border','true');
+
+    WITH c AS (SELECT id AS cid FROM countries WHERE iso_code='SG'),
+    ins AS (
+      INSERT INTO policies (country_id, name, source_url, category, status, raw_text)
+      SELECT cid, 'Singapore AI Model Governance', 'https://example.sg/ai', 'ai_policy', 'in_force', 'Baseline AI policy text.' FROM c RETURNING id
+    )
+    INSERT INTO policy_indicators (policy_id, key, value) VALUES
+      ((SELECT id FROM ins), 'mentions_ai_systems','true'),
+      ((SELECT id FROM ins), 'mentions_data_localization','true');
+
+    -- Infra for JP, KR, SA, SG (illustrative)
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'gpu_capacity_index', 62 FROM countries WHERE iso_code='JP';
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'power_cost_index', 58 FROM countries WHERE iso_code='JP';
+
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'gpu_capacity_index', 68 FROM countries WHERE iso_code='KR';
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'power_cost_index', 57 FROM countries WHERE iso_code='KR';
+
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'gpu_capacity_index', 66 FROM countries WHERE iso_code='SA';
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'power_cost_index', 52 FROM countries WHERE iso_code='SA';
+
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'gpu_capacity_index', 70 FROM countries WHERE iso_code='SG';
+    INSERT INTO infra_signals (country_id, metric, value) SELECT id, 'power_cost_index', 55 FROM countries WHERE iso_code='SG';
     """
     conn = get_conn()
     try:

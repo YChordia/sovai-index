@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [
+  "venv",
+  "ui-frontend",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --maxfail=1 --disable-warnings --cov=core --cov=api --cov-report=xml"
+

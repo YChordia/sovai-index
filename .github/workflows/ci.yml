@@ -19,8 +19,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-      - name: Run tests
-        run: pytest -q
+      - name: Lint (ruff)
+        run: |
+          ruff --version
+          ruff check .
+      - name: Run tests with coverage
+        run: pytest
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-xml
+          path: coverage.xml
 
   frontend:
     runs-on: ubuntu-latest
@@ -34,8 +43,36 @@ jobs:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: ui-frontend/package.json
-      - name: Install and build
+      - name: Install, lint and build
+        run: |
+          npm ci
+          npm run lint --if-present
+          npm run build
+
+  pages:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: frontend
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Build frontend
+        working-directory: ui-frontend
         run: |
           npm ci
           npm run build
-
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'ui-frontend/dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
