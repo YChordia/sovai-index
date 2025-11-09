@@ -7,5 +7,4 @@ Docs Index
 - chat-logs/2025-11-09-session.md — Paste raw transcript for archival
 
 Planned additions
-- requirements.md, user-stories.md, architecture.md, test-plan.md, threat-model.md, runbook.md, traceability.md, onboarding.md, SECURITY.md, SUPPORT.md
-
+- requirements.md, user-stories.md, architecture.md, test-plan.md, threat-model.md, runbook.md, traceability.md, onboarding.md, SECURITY.md, SUPPORT.md, CHANGELOG.md
