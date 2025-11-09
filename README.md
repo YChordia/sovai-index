@@ -61,3 +61,5 @@ Real‑time regulatory and language sovereignty intelligence.
 ## For Developers
 
 - See `DEVELOPER_NOTES.md` for a concise summary, gotchas (ISO mapping, jsdom, Mantine matchMedia), run/test/CI instructions, and roadmap.
+- See `docs/PLATFORM_READINESS_PLAN.md` for the longer-term platform plan (process, quality, security, performance, deployment).
+- See `docs/README.md` for a docs index; `docs/chat-logs/2025-11-09-session.md` to archive raw session transcripts.
