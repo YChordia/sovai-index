@@ -11,5 +11,9 @@ module.exports = {
     'prettier',
   ],
   settings: { react: { version: 'detect' } },
+  rules: {
+    // Modern JSX transform doesn't require React in scope
+    'react/react-in-jsx-scope': 'off',
+    'react/jsx-uses-react': 'off',
+  },
 }
-
