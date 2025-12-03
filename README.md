@@ -1,65 +1,72 @@
 # SovAI Index
 
-Real‑time regulatory and language sovereignty intelligence.
+FastAPI + React demo for sovereign AI readiness. Transparent scoring, provenance, and clickable choropleth map.
 
-- Maps: Regulation + Infra + Language/Knowledge Sovereignty → Readiness Score → Strategic Decisions.
-- Transparent scoring: components, weights, and provenance from real documents.
-- Useful for: where to invest and where to build sovereign AI infra.
-- Feels like an early production tool (FastAPI + React), not a hack.
+## What’s inside
+- FastAPI backend (`api/main.py`) with endpoints for countries, country detail, compare, and methodology.
+- Scoring (`core/scoring.py`): policy/infra/language/risk -> readiness; writes snapshots to Postgres.
+- Ingest & seed (`scripts/smoke_test.py`): applies schema, seeds demo countries (EU, IN, JP, KR, SA, SG), runs scoring, hits API.
+- React + Vite frontend (`ui-frontend`): Overview, Country Detail, Compare, Methodology; choropleth map with EU region mapping.
 
-## Getting Started
+## Prerequisites
+- Python 3.11+
+- Node 18+
+- PostgreSQL (local or accessible)
 
-### 1) Start Postgres and apply schema
+## Quick start (dev)
+1) Clone and install backend deps
+```bash
+python -m venv venv
+./venv/Scripts/pip install -r requirements.txt   # Windows
+# or: source venv/bin/activate && pip install -r requirements.txt
+```
 
-- Ensure a local PostgreSQL is running and reachable.
-- Defaults via env vars: `DB_NAME=sovai`, `DB_USER=sovai`, `DB_PASSWORD=sovai`, `DB_HOST=localhost`, `DB_PORT=5432`.
-- Apply schema:
-  - psql -h localhost -U sovai -d sovai -f db/schema.sql
+2) Seed demo data and compute scores (uses DB_* envs; defaults shown)
+```bash
+# Optional env overrides
+# set DB_USER=postgres; set DB_PASSWORD=postgres; set DB_NAME=sovai; set DB_HOST=localhost; set DB_PORT=5432
+./venv/Scripts/python.exe scripts/smoke_test.py
+```
 
-### 2) Run ingestion and scoring
+3) Run the API
+```bash
+./venv/Scripts/uvicorn.exe api.main:app --reload --port 8000
+# Check: http://localhost:8000/health, /countries, /country/EU, /compare?iso=EU&iso=IN, /docs
+```
 
-- Option A: Use your existing venv from `requirements.txt` (psycopg2, fastapi, requests, etc.).
-- Fetch minimal seed policies and parse indicators:
-  - python ingest/load_db.py
-- Compute readiness scores (writes snapshots to `readiness_scores`):
-  - python core/scoring.py
+4) Run the frontend
+```bash
+cd ui-frontend
+npm install
+npm run dev
+# Open the URL Vite prints (default http://localhost:5173). API base defaults to http://localhost:8000.
+# To target a different API: create ui-frontend/.env with VITE_API_BASE=http://host:port, then restart dev server.
+```
 
-### 3) Run the FastAPI backend
+## Tests
+- Backend (lint + pytest + coverage):
+  - PowerShell: `scripts\run_tests.ps1 -Dev`
+  - Bash: `DEV=1 ./scripts/run_tests.sh`
+- Frontend unit/component (vitest):
+  - `cd ui-frontend && npm run test`
+- Frontend E2E (Playwright, functional assertions):
+  - `cd ui-frontend`
+  - `npm run build && npm run preview`
+  - `npm run e2e:install` (first time to install browsers)
+  - In another shell: `npm run test:e2e`
 
-- uvicorn api.main:app --reload --port 8000
-- Health: http://localhost:8000/health → `{"status":"ok"}`
-- Countries: http://localhost:8000/countries
-- Country Detail: http://localhost:8000/country/EU
-- Compare: http://localhost:8000/compare?iso=IN&iso=EU
-- Methodology: http://localhost:8000/methodology
+CI (GitHub Actions)
+- Backend job: ruff lint, pytest with coverage.
+- Frontend job: eslint, vitest, build.
+- E2E job: seeds DB, starts API + preview, runs Playwright (functional checks).
 
-### 4) Run the UI frontend
+## Troubleshooting
+- “Failed to fetch” in UI: ensure API is running on 8000 and VITE_API_BASE points to it; verify http://localhost:8000/health works.
+- Empty data: rerun `scripts/smoke_test.py` and refresh.
+- Map shows “No data”: ensure /countries returns readiness_score and topojson loads (defaults to CDN; can override with VITE_TOPO_URL).
 
-- cd ui-frontend
-- npm install
-- npm run dev
-- Open: http://localhost:5173 (uses API at http://localhost:8000 by default)
-- To point to a different backend, set `VITE_API_BASE=http://your-host:8000`.
+## Docs
+- `DEVELOPER_NOTES.md` — summary, gotchas (ISO mapping, jsdom, Mantine matchMedia), run/test/CI, roadmap.
+- `docs/PLATFORM_READINESS_PLAN.md` — full platform plan and action backlog.
+- `docs/README.md` — docs index (requirements, architecture, test plan, threat model, runbook, etc.).
 
-## Screenshots (placeholders)
-
-- Overview: ui shows country table with readiness, a world map placeholder shaded by readiness, and Top 5/Bottom 5.
-- Country Detail: score card, stacked bars for Policy vs Infra vs Language vs Risk, key indicators with source links, and methodology snippet.
-- Compare: multi-select countries, chart comparing sub-scores, and short interpretive text.
-
-## Notes & Assumptions
-
-- Where real data is missing, we use clearly commented placeholders (e.g., infra and language).
-- `policy_indicators` are extracted from raw policy text with simple keyword rules. Keys include normalized `mentions_*` flags and legacy equivalents for compatibility.
-- Scoring stores snapshots with timestamps; rerun `core/scoring.py` to refresh.
-
-## Development
-
-- API: FastAPI app at `api/main.py` with Pydantic models and endpoints.
-- Scoring: see `core/scoring.py` for readable, documented logic.
-- Ingest: simple fetch + parse at `ingest/` (seed policies only for demo).
-## For Developers
-
-- See `DEVELOPER_NOTES.md` for a concise summary, gotchas (ISO mapping, jsdom, Mantine matchMedia), run/test/CI instructions, and roadmap.
-- See `docs/PLATFORM_READINESS_PLAN.md` for the longer-term platform plan (process, quality, security, performance, deployment).
-- See `docs/README.md` for a docs index; `docs/chat-logs/2025-11-09-session.md` to archive raw session transcripts.
